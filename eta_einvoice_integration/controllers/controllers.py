@@ -19,7 +19,11 @@ class EinvoiceIntegration(http.Controller):
     @http.route('/api/v1/get_invoices', auth='public', methods=['GET'], csrf=False, cors="*")
     def get_invoices(self, **kwargs):
         try:
-            invs = http.request.env['account.move'].sudo()
+            invs = http.request.env['account.move'].sudo().search([('eta_invoice_sent', '=', False),
+                                                                   ('eta_invoice_signed', '=', False),
+                                                                   ('move_type', 'in', ('out_invoice', 'out_refund')),
+                                                                   ('issued_date', '!=', False),
+                                                                   ('state', '=', 'posted')])
             if invs:
                 invs_list = []
                 for inv in invs:

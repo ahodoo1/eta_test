@@ -42,8 +42,10 @@
                 </xpath>
                 <xpath expr="//div[hasclass('o_td_label')]" position="replace">
                     <div class="o_td_label">
-                        <label for="partner_id" string="Partner" style="font-weight:bold;" attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
-                        <label for="partner_id" string="Vendor" style="font-weight:bold;" attrs="{'invisible': [('move_type', 'not in', ('in_invoice', 'in_refund', 'in_receipt'))]}"/>
+                        <label for="partner_id" string="Partner" style="font-weight:bold;"
+                               attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
+                        <label for="partner_id" string="Vendor" style="font-weight:bold;"
+                               attrs="{'invisible': [('move_type', 'not in', ('in_invoice', 'in_refund', 'in_receipt'))]}"/>
                     </div>
                 </xpath>
                 <field name="invoice_date" position="after">
@@ -51,9 +53,13 @@
                 </field>
                 <field name="payment_reference" position="before">
                     <field name="invoice_scope" widget="radio" options="{'horizontal': true}"
-                    attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_refund'))]}"/>
+                           attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_refund'))]}"/>
                     <field name="client_name" attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('invoice_scope', '=', 'i'), ('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))],
                                                     'invisible': ['|',('move_type', 'not in', ['out_invoice', 'out_refund', 'in_refund']),('invoice_scope', '!=', 'i')]}"/>
+                </field>
+
+                <field name="payment_reference" position="after">
+                    <field name="document_type" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                 </field>
                 <notebook position="inside">
                     <page string="ETA E-Invoice">
@@ -137,8 +143,49 @@
                             </group>
                         </group>
                         <group>
-                            <button class="d-none" name="action_update_eta_data" type="object" string="Update ETA Submission"
+                            <button class="d-none" name="action_update_eta_data" type="object"
+                                    string="Update ETA Submission"
                                     icon="fa-gear" groups="account.group_account_manager"/>
+                        </group>
+                    </page>
+
+                    <page string="EI ETA E-Invoice" attrs="{'invisible': [('document_type','!=','ei')]}">
+                        <group>
+                            <group string="Delivery Date">
+                                <field name="service_delivery_date" attrs="{'required': [('document_type','=','ei')]}"/>
+                            </group>
+                            <group></group>
+                        </group>
+                        <group>
+                            <group string="Purchase Info">
+                                <field name="purchase_order_ref" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="purchase_order_desc" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group></group>
+                        </group>
+                        <group>
+                            <group string="Bank Info">
+                                <field name="bank_name" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="bank_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="bank_account_num" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="bank_account_iban" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="swift_code" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="bank_payment_terms" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group></group>
+                        </group>
+                         <group>
+                            <group string="Delivery Info">
+                                <field name="approach" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="packaging" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="date_validity" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="export_port" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="country_of_origin" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="gross_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="net_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="delivery_terms" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group></group>
                         </group>
                     </page>
                 </notebook>
@@ -162,6 +209,7 @@
                     <field name="eta_state" widget="badge" decoration-success="eta_state == 'valid'"
                            decoration-info="eta_state == 'submitted'"
                            decoration-danger="eta_state in ['invalid','rejected']" optional="show"/>
+                    <field name="eta_invoice_sent" string="Document Sent" optional="show"/>
                     <field name="eta_invoice_signed" string="Sign" optional="show"/>
                     <button name="action_view_validation_results" type="object"
                             groups="account.group_account_invoice"
@@ -242,9 +290,9 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    for rec in records:
-                        if not rec.eta_invoice_sent and rec.state=='posted':
-                            res = rec.action_send_eta_invoice()
+                  for rec in records:
+                     if not rec.eta_invoice_sent and rec.state=='posted':
+                       res = rec.action_send_eta_invoice()
             </field>
         </record>
 
@@ -256,9 +304,9 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    for rec in records:
-                        if rec.send_button_eta:
-                            res = rec.action_post_sign_invoice()
+                  for rec in records:
+                    if rec.send_button_eta:
+                       res = rec.action_post_sign_invoice()
             </field>
         </record>
 
@@ -270,8 +318,8 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    for rec in records:
-                        res = rec.action_get_eta_invoice_state()
+                   for rec in records:
+                     res = rec.action_get_eta_invoice_state()
             </field>
         </record>
         <record id="action_multi_confirm" model="ir.actions.server">
@@ -282,8 +330,8 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    for rec in records:
-                        res = rec.action_post()
+                   for rec in records:
+                     res = rec.action_post()
             </field>
         </record>
 

@@ -1,0 +1,116 @@
+{
+  'issuer': {
+    'address': {
+      'branchID': '0',
+      'country': 'EG',
+      'governate': 'Port Said',
+      'regionCity': 'Port Said',
+      'street': '0 بحرى الحوض السمكى -المنطقة الصناعية جنوب بورسعيد',
+      'buildingNumber': '1',
+      'postalCode': '',
+      'floor': '1',
+      'room': '1',
+      'landmark': '1',
+      'additionalInformation': '1'
+    },
+    'type': 'B',
+    'id': '376347384',
+    'name': 'السيد محمود احمد حسين و شريكة بورسعيد ستار'
+  },
+  'receiver': {
+    'address': {
+      'country': 'EG',
+      'governate': 'Port Said',
+      'regionCity': 'port said',
+      'street': 'elnahda',
+      'buildingNumber': 'elnahda',
+      'postalCode': '42111',
+      'floor': 'elnahda',
+      'room': 'elnahda',
+      'landmark': 'elnahda',
+      'additionalInformation': 'elnahda'
+    },
+    'type': 'P',
+    'id': '',
+    'name': 'jlhgoelllllllllll'
+  },
+  'documentType': 'I',
+  'documentTypeVersion': '1.0',
+  'dateTimeIssued': '2022-08-08T14:52:49Z',
+  'taxpayerActivityCode': '1010',
+  'internalID': '/',
+  'purchaseOrderReference': '',
+  'purchaseOrderDescription': '',
+  'salesOrderReference': '',
+  'salesOrderDescription': '',
+  'proformaInvoiceNumber': '',
+  'payment': {
+    'bankName': '',
+    'bankAddress': '',
+    'bankAccountNo': '',
+    'bankAccountIBAN': '',
+    'swiftCode': '',
+    'terms': ''
+  },
+  'delivery': {
+    'approach': '',
+    'packaging': '',
+    'dateValidity': '',
+    'exportPort': '',
+    'grossWeight': 0,
+    'netWeight': 0,
+    'terms': ''
+  },
+  'invoiceLines': [
+    {
+      'description': 'Anchovy fillets 230g',
+      'itemType': 'GS1',
+      'itemCode': '6223007660761',
+      'unitType': 'C62',
+      'quantity': 1,
+      'internalCode': '',
+      'salesTotal': 100,
+      'total': 112.632,
+      'valueDifference': 0,
+      'totalTaxableFees': 0,
+      'netTotal': 98.8,
+      'itemsDiscount': 0,
+      'unitValue': {
+        'currencySold': 'EGP',
+        'amountEGP': 100,
+        'amountSold': 0,
+        'currencyExchangeRate': 0
+      },
+      'discount': {
+        'rate': 1.2,
+        'amount': 1.2
+      },
+      'taxableItems': [
+        {
+          'taxType': 'T1',
+          'amount': 13.832,
+          'subType': 'V009',
+          'rate': 14
+        }
+      ]
+    }
+  ],
+  'totalDiscountAmount': 1.2,
+  'totalSalesAmount': 100,
+  'netAmount': 98.8,
+  'taxTotals': [
+    {
+      'taxType': 'T1',
+      'amount': 13.832
+    }
+  ],
+  'totalAmount': 112.632,
+  'extraDiscountAmount': 0,
+  'totalItemsDiscountAmount': 0,
+  'signatures': [
+    {
+      'signatureType': 'I',
+      'value': False
+    }
+  ]
+}
