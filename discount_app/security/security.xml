@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+        <record id="can_discount_on_total" model="res.groups">
+            <field name="name">Discount on Total</field>
+            <field name="category_id" ref="base.module_category_sales_sales"/>
+        </record>
+    </data>
+</odoo>

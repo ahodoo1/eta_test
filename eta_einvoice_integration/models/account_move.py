@@ -215,8 +215,6 @@ class accounut_move(models.Model):
         request_url = "%s/api/v1/documentsubmissions" % (api_domain)
         eta_invoice = self._prepare_eta_invoice()
         _logger.warning('documents ::: %s.' % eta_invoice)
-        if self.currency_id.name == 'EGP':
-            del eta_invoice['invoiceLines']['unitValue']['amountSold']
         request_payload = {
             "documents": [eta_invoice]
         }
@@ -358,7 +356,11 @@ class accounut_move(models.Model):
         uuid = eta_uuid
         if not eta_uuid:
             uuid = self.eta_uuid
+        _logger.warning('eta_user ::: %s.' % uuid)
+
         invoice = self._get_eta_invoice(uuid, token)
+        _logger.warning('invoices signed ::: %s.' % invoice)
+
         if invoice.get('status', False) == "Submitted":
             self.eta_state = 'submitted'
         if invoice.get('status', False) == "Invalid":
@@ -591,13 +593,13 @@ class accounut_move(models.Model):
         })
         force_sign = self._eta_force_sign()
         if force_sign:
-            eta_invoice.update(
-                {"signatures": [
+            eta_invoice.update({"signatures": [
                 {
                     "signatureType": "I",
                     "value": self.signature_value
                 }
             ]})
+        print(eta_invoice)
         return eta_invoice
 
     def _prepare_issuer_data(self):

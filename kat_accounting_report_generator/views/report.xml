@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+
+        <record id="report_transaction_xlsx" model="ir.actions.report">
+            <field name="name">Transactions</field>
+            <field name="model">transaction.generator.wizard</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">kat_accounting_report_generator.transaction_xlsx</field>
+            <field name="report_file">kat_accounting_report_generator.transaction_xlsx</field>
+            <field name="binding_type">report</field>
+        </record>
+
+
+    </data>
+</odoo>

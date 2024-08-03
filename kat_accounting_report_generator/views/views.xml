@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="transaction_generator_form_view">
+            <field name="name">transaction.generator.form</field>
+            <field name="model">transaction.generator.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Transaction Generator Form">
+                    <group>
+                        <group>
+                            <field name="type" required="1"/>
+                            <field name="from_date" required="1"/>
+                            <field name="to_date" required="1"/>
+                            <field name="partner_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="is_draft"/>
+                            <field name="is_posted"/>
+                            <field name="is_cancelled"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_print_transaction" type="object" string="Print" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="transactions_generator_action_window">
+            <field name="name">Transactions Generator</field>
+            <field name="res_model">transaction.generator.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="transaction_generator_form_view"/>
+            <field name="target">new</field>
+        </record>
+
+
+        <menuitem name="Transactions Generator" id="transactions_generator_kat_parent_menu"
+                  parent="account.menu_finance_reports" sequence="2">
+            <menuitem id="transactions_generator_kat_menu" action="transactions_generator_action_window"/>
+        </menuitem>
+    </data>
+</odoo>
