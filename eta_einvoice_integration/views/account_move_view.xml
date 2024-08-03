@@ -1,0 +1,292 @@
+<odoo>
+    <data>
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">view_move_form_inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button[@name='action_post']" position="after">
+                    <field name="send_button_eta" invisible="1"/>
+                    <field name="sign_button_eta" invisible="1"/>
+                    <field name="cancel_button_eta" invisible="1"/>
+                    <button name="action_post_sign_invoice" type="object"
+                            class="btn-success" icon="fa-check-square-o"
+                            groups="account.group_account_invoice"
+                            invisible="1"
+                            string="Sign Invoice"/>
+
+                    <button name="action_post_sign_invoice" type="object"
+                            class="btn-success" icon="fa-check-square-o"
+                            groups="account.group_account_invoice"
+                            attrs="{'invisible': [('sign_button_eta','!=', 'resign')]}"
+                            string="Re-Sign Invoice"/>
+
+                    <button name="action_send_eta_invoice" type="object"
+                            class="btn-warning" icon="fa-paper-plane"
+                            groups="account.group_account_invoice"
+                            string="Send To ETA"
+                            attrs="{'invisible': [('send_button_eta','!=', 'send')]}"/>
+
+                    <button name="action_send_eta_invoice" type="object"
+                            class="btn-warning" icon="fa-paper-plane"
+                            groups="account.group_account_invoice"
+                            string="Re-Send To ETA"
+                            attrs="{'invisible': [('send_button_eta','!=', 'resend')]}"/>
+
+                    <button name="action_cancel_eta_invoice" type="object"
+                            class="btn-danger" icon="fa-paper-plane"
+                            groups="account.group_account_invoice"
+                            string="Cancel on ETA"
+                            attrs="{'invisible': [('cancel_button_eta','!=', 'cancel')]}"/>
+                </xpath>
+                <xpath expr="//div[hasclass('o_td_label')]" position="replace">
+                    <div class="o_td_label">
+                        <label for="partner_id" string="Partner" style="font-weight:bold;" attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
+                        <label for="partner_id" string="Vendor" style="font-weight:bold;" attrs="{'invisible': [('move_type', 'not in', ('in_invoice', 'in_refund', 'in_receipt'))]}"/>
+                    </div>
+                </xpath>
+                <field name="invoice_date" position="after">
+                    <field name="issued_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </field>
+                <field name="payment_reference" position="before">
+                    <field name="invoice_scope" widget="radio" options="{'horizontal': true}"
+                    attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_refund'))]}"/>
+                    <field name="client_name" attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('invoice_scope', '=', 'i'), ('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))],
+                                                    'invisible': ['|',('move_type', 'not in', ['out_invoice', 'out_refund', 'in_refund']),('invoice_scope', '!=', 'i')]}"/>
+                </field>
+                <notebook position="inside">
+                    <page string="ETA E-Invoice">
+                        <widget name="web_ribbon" title="Valid" bg_color="bg-success"
+                                attrs="{'invisible': [('eta_state', '!=', 'valid')]}" style="margin-top: -16px;"/>
+                        <widget name="web_ribbon" title="Invalid" bg_color="bg-danger"
+                                attrs="{'invisible': [('eta_state', '!=', 'invalid')]}" style="margin-top: -16px;"/>
+                        <widget name="web_ribbon" title="Cancelled" bg_color="bg-info"
+                                attrs="{'invisible': [('eta_state', '!=', 'cancelled')]}" style="margin-top: -16px;"/>
+                        <group>
+                            <group>
+                                <field name="eta_uuid" readonly="1" force_save="1"/>
+                                <field name="eta_submission_id" readonly="1" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="eta_invoice_signed" attrs="{'invisible': [('use_sign','=',False)]}"
+                                       readonly="1" force_save="1"/>
+                                <field name="eta_invoice_sent" readonly="1" force_save="1"/>
+                                <field name="eta_document_name" invisible="1"/>
+                                <field name="use_sign" invisible="1"/>
+                                <field name="signature_type" invisible="1"/>
+                                <field name="signature_value" invisible="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group attrs="{'invisible': [('eta_state', '!=', 'invalid')]}">
+                                <label for="eta_state"/>
+                                <div class="o_row">
+                                    <button name="action_view_validation_results" type="object"
+                                            groups="account.group_account_invoice"
+                                            icon="fa-info-circle"
+                                            class="btn btn-danger"
+                                            attrs="{'invisible': [('eta_invoice_sent','=',False)]}">
+                                        <span>Invalid</span>
+                                    </button>
+                                    <button name="action_get_eta_invoice_state" type="object"
+                                            groups="account.group_account_invoice"
+                                            icon="fa-refresh"
+                                            string="Get ETA Invoice State"
+                                            attrs="{'invisible': [('eta_invoice_sent','=',False)]}"/>
+                                </div>
+                            </group>
+                            <group attrs="{'invisible': [('eta_state', '!=', 'valid')]}">
+                                <label for="eta_state"/>
+                                <div class="o_row">
+                                    <button name="action_view_validation_results" type="object"
+                                            groups="account.group_account_invoice"
+                                            icon="fa-info-circle"
+                                            class="btn btn-success"
+                                            attrs="{'invisible': [('eta_invoice_sent','=',False)]}">
+                                        Valid
+                                    </button>
+                                    <button name="action_get_eta_invoice_state" type="object"
+                                            groups="account.group_account_invoice"
+                                            icon="fa-refresh"
+                                            string="Get ETA Invoice Status"
+                                            attrs="{'invisible': [('eta_invoice_sent','=',False)]}"/>
+                                </div>
+                            </group>
+                            <group attrs="{'invisible': [('eta_state', 'in', ['valid', 'invalid'])]}">
+                                <label for="eta_state"/>
+                                <div class="o_row">
+                                    <field name="eta_state" readonly="1"/>
+                                    <button name="action_get_eta_invoice_state" type="object"
+                                            groups="account.group_account_invoice"
+                                            icon="fa-refresh"
+                                            string="Get ETA Invoice State"
+                                            attrs="{'invisible': [('eta_invoice_sent','=',False)]}"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label for="eta_pdf"/>
+                                <div class="o_row">
+                                    <field name="eta_pdf" filename="eta_document_name" readonly="1" force_save="1"/>
+                                    <button name="action_get_eta_invoice_pdf" type="object"
+                                            groups="account.group_account_invoice"
+                                            icon="fa-clone"
+                                            string="Get ETA Invoice PDF"
+                                            attrs="{'invisible': [('eta_invoice_sent','=',False)]}"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group>
+                            <button class="d-none" name="action_update_eta_data" type="object" string="Update ETA Submission"
+                                    icon="fa-gear" groups="account.group_account_manager"/>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+        <record id="view_invoice_tree_inh" model="ir.ui.view">
+            <field name="name">view_invoice_tree_inh</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="client_name" optional="show"/>
+                    <field name="invoice_scope" optional="hide"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="issued_date" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="eta_invoice_sent" invisible="1"/>
+                    <field name="eta_state" widget="badge" decoration-success="eta_state == 'valid'"
+                           decoration-info="eta_state == 'submitted'"
+                           decoration-danger="eta_state in ['invalid','rejected']" optional="show"/>
+                    <field name="eta_invoice_signed" string="Sign" optional="show"/>
+                    <button name="action_view_validation_results" type="object"
+                            groups="account.group_account_invoice"
+                            icon="fa-info-circle" class="btn btn-success"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_invoice_update_uuid" model="ir.ui.view">
+            <field name="name">view_invoice_tree_inh</field>
+            <field name="model">account.move</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="eta_uuid"/>
+                                <field name="eta_submission_id"/>
+                            </group>
+                            <group>
+                                <field name="eta_invoice_signed"/>
+                                <field name="eta_invoice_sent"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="Save" class="btn-primary" special="save"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="validation_result_view_form" model="ir.ui.view">
+            <field name="name">validation_result_view_form</field>
+            <field name="model">validation.result</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h2>
+                                <field name="status" style="color: green;"
+                                       attrs="{'invisible': [('result', '!=', True)]}"/>
+                                <field name="status" style="color: red;"
+                                       attrs="{'invisible': [('result', '!=', False)]}"/>
+                            </h2>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="move_id"/>
+                                <field name="result" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Steps">
+                                <field name="validation_steps_line" nolabel="1">
+                                    <tree decoration-danger="status=='Invalid'" decoration-success="status=='Valid'">
+                                        <field name="name"/>
+                                        <field name="status"/>
+                                        <field name="error" widget="html"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Close"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_multi_send_eta" model="ir.actions.server">
+            <field name="name">Send to ETA</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    for rec in records:
+                        if not rec.eta_invoice_sent and rec.state=='posted':
+                            res = rec.action_send_eta_invoice()
+            </field>
+        </record>
+
+        <record id="action_multi_cancel_eta" model="ir.actions.server">
+            <field name="name">Cancel Sign</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    for rec in records:
+                        if rec.send_button_eta:
+                            res = rec.action_post_sign_invoice()
+            </field>
+        </record>
+
+        <record id="action_multi_get_status_eta" model="ir.actions.server">
+            <field name="name">Get Status</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    for rec in records:
+                        res = rec.action_get_eta_invoice_state()
+            </field>
+        </record>
+        <record id="action_multi_confirm" model="ir.actions.server">
+            <field name="name">Confirm Invoices</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    for rec in records:
+                        res = rec.action_post()
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

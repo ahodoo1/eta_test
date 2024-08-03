@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_validation_result,access_validation_result,model_validation_result,base.group_user,1,1,1,1
+access_validation_result_steps,access_validation_result_steps,model_validation_result_steps,base.group_user,1,1,1,1
