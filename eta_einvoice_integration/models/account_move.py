@@ -229,8 +229,8 @@ class accounut_move(models.Model):
             if request_response:
                 _logger.warning('Logger send response: %s.' % request_response.text)
             if submissionData:
-                if submissionData.get('error'):
-                    self._error_handeling(submissionData.get('error'), action_code='1002')
+                # if submissionData.get('error'):
+                #     self._error_handeling(submissionData.get('error'), action_code='1002')
 
                 if submissionData.get('rejectedDocuments', False) and isinstance(
                         submissionData.get('rejectedDocuments'), list):
